@@ -1,4 +1,5 @@
 #!/usr/bin/env perl
+package Patch;
 
 use strict;
 use warnings;
@@ -11,36 +12,11 @@ use LWP::UserAgent;
 use Net::FTP;
 use YAML::Syck;
 
-$|++;
-
 sub ftp;
+
 
 my $ua = LWP::UserAgent->new;
 
-# Default options are for iRO.
-# TODO: Consider putting the server-specific options in servers.txt (some of them are there already).
-my $opt = get_options(
-	{
-		allow_url         => 'http://patch.1.online.ragnarok.warpportal.net/patch02/patch_allow.txt',
-		list_url          => 'http://patch.1.online.ragnarok.warpportal.net/patch02/patch2.txt',
-		download_base_url => 'ftp://ropatch2.gravityus.com/patch',
-		git_dir           => "$ENV{HOME}/git/openkore/tables/iRO/official",
-		download_dir      => "$ENV{HOME}/patches/iRO",
-	}, {
-		'allow_url=s'         => 'the "is patching currently allowed" URL',
-		'check_files'         => 'force re-check of previously downloaded files',
-		'download_base_url=s' => 'FTP URL to the patch server',
-		'download_dir=s'      => 'directory for temporary downloaded files',
-		'force|f'             => 'force download even if the allow-url says we are not allowed to',
-		'git_dir=s'           => 'the files OpenKore cares about will be placed in this directory',
-		'list_url=s'          => 'URL to the list of patch files',
-	}
-);
-
-if ( !patch_allowed() ) {
-	print "Patching is not currently allowed. You may use --force to force patching.\n";
-	exit;
-}
 
 if ( !grep { -f "$_/grf_extract" } split ':', $ENV{PATH} ) {
 	print "This program requires grf_extract. Please make sure it is in your \$PATH.\n";
@@ -294,7 +270,8 @@ sub convert_hat_effect_file {
 }
 
 sub patch_allowed {
-	$opt->{force} || $ua->get( $opt->{allow_url} )->content eq 'allow';
+	my ($config) = shift;
+	$config->{force} || $ua->get( $config->{allow_url} )->content eq 'allow';
 }
 
 sub patch_list {
@@ -445,62 +422,4 @@ sub fix_unicode {
 	} split "\n", $str;
 
 	Encode::decode( 'UTF-8', $str );
-}
-
-sub get_options {
-	my ( $opt_def, $opt_str ) = @_;
-
-	# Add some default options.
-	$opt_str = {
-		'help|h' => 'this help',
-		%$opt_str,
-	};
-
-	# Auto-convert underscored long names to dashed long names.
-	foreach ( keys %$opt_str ) {
-		my ( $name, $type ) = split '=';
-		my @opts = split /\|/, $name;
-		my ( $underscored ) = grep {/_/} @opts;
-		my ( $dashed )      = grep {/-/} @opts;
-		if ( $underscored && !$dashed ) {
-			$dashed = $underscored;
-			$dashed =~ s/_/-/g;
-			splice @opts, ( length( $opts[-1] ) == 1 ? $#opts : @opts ), 0, $dashed;
-			my $key = join '|', @opts;
-			$key .= "=$type" if $type;
-			$opt_str->{$key} = $opt_str->{$_};
-			delete $opt_str->{$_};
-		}
-	}
-
-	my $opt = {%$opt_def};
-	my $success = GetOptions( $opt, keys %$opt_str );
-	usage( $opt_def, $opt_str ) if $opt->{help} || !$success;
-
-	$opt;
-}
-
-sub usage {
-	my ( $opt_def, $opt_str ) = @_;
-	my $maxlen = 0;
-	my $opt    = {};
-	foreach ( keys %$opt_str ) {
-		my ( $name, $type ) = split '=';
-		my ( $var ) = split /\|/, $name;
-		my ( $long ) = reverse grep { length $_ != 1 } split /\|/, $name;
-		my ( $short ) = grep { length $_ == 1 } split /\|/, $name;
-		$maxlen = length $long if $long && $maxlen < length $long;
-		$opt->{ $long || $short || '' } = {
-			short   => $short,
-			long    => $long,
-			desc    => $opt_str->{$_},
-			default => $opt_def->{$var}
-		};
-	}
-	print "Usage: $0 [options]\n";
-	foreach ( map { $opt->{$_} } sort keys %$opt ) {
-		printf "  %2s %-*s  %s%s\n",    #
-			$_->{short} ? "-$_->{short}" : '', $maxlen + 2, $_->{long} ? "--$_->{long}" : '', $_->{desc}, $_->{default} ? " (default: $_->{default})" : "";
-	}
-	exit;
 }
