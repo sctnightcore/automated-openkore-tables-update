@@ -243,8 +243,7 @@ sub ftp_data {
 
 sub backticks {
     my ( @cmd ) = @_;
-use Data::Dumper;
-print Dumper @cmd;
+
     my $pid = open( my $fp, '-|' );
     
     if ( !$pid ) {
@@ -431,7 +430,7 @@ sub extract_all_rgz_files {
         # Extract file list.
         print "[SCRIPT] Extracting ".$file.".\n";
 
-        my $data = backticks( $current_dir.'/scripts/rgz.pl', '-x -v',  $download_dir, $file );
+        my $data = backticks( $current_dir.'/scripts/rgz.pl', $download_dir, $file, '-x', '-v' );
         my @lines = split /\n/, $data;
 
         my $files = { map { /^f\s+(\d+)\s+(.*)$/o ? ( $2 => $1 ) : () } @lines };
