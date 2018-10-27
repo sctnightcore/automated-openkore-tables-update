@@ -1,0 +1,13 @@
+# Backup files
+*~
+.#*
+*.old
+*.bak
+*.BAK
+*.orig
+*.rej
+*.rgz
+*.gpf
+*.grf
+*.yml
+

@@ -278,6 +278,9 @@ sub ftp {
     if ( !$ftp ) {
         my $uri = URI->new( $opt->{download_base_url} );
         $ftp = Net::FTP->new( $uri->host, Debug => 1, Passive => 1 );
+		if(!$ftp) {
+			print "Error while connecting to FTP (check connection or URL)\n";
+		}
         $ftp->login;
         $ftp->binary;
         $ftp->cwd( $uri->path );
@@ -479,7 +482,6 @@ sub extract_all_rgz_files {
 
         # Extract file list.
         print "[SCRIPT] Extracting ".$file.".\n";
-        next;
         my $data = backticks( 'rgz.pl', '-l', $file );
         my @lines = split /\n/, $data;
 
