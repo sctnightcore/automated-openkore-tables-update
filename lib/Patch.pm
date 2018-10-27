@@ -430,7 +430,7 @@ sub extract_all_rgz_files {
         # Extract file list.
         print "[SCRIPT] Extracting ".$file.".\n";
 
-        my $data = backticks( $current_dir.'/scripts/rgz.pl', $download_dir, $file, '-x', '-v' );
+        my $data = backticks( $current_dir.'/scripts/rgz.pl', $download_dir, $file, '-x', '--verbose' );
         my @lines = split /\n/, $data;
 
         my $files = { map { /^f\s+(\d+)\s+(.*)$/o ? ( $2 => $1 ) : () } @lines };
