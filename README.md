@@ -28,4 +28,8 @@ https://www.ubuntu.com/download/desktop
     2.3 – install the necessary modules using the following commands
         sudo cpan Config::IniFiles
         sudo cpan YAML::Syck
-    
+    2.4 - open terminal and go to where automated-openkore-tables-update is located
+        cd Desktop/
+	2.5 - give chmod 777 to automated-openkore-tables-update
+		sudo chmod 777 -R automated-openkore-tables-update/
+	

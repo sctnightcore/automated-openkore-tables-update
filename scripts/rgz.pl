@@ -15,7 +15,7 @@ my $opt = get_options(
 	}
 );
 
-my ( $archive, $file, $target ) = @ARGV;
+my ( $output_dir, $archive, $file, $target ) = @ARGV;
 
 usage() if !$archive;
 
@@ -58,7 +58,7 @@ sub extract {
 	while ( !$fp->eof && @$files ) {
 		my $file = shift @$files;
 		for ( my $bytes = $file->{start} ; $bytes > 0 ; ) { $bytes -= read $fp, $buf = '', $bytes > 8192 ? 8192 : $bytes; }
-		if ( open FP, '>', $file->{target} ) {
+		if ( open FP, '>', $output_dir.$file->{target} ) {
 			print "Extracting $file->{name} into $file->{target}..." if $opt->{verbose};
 			for ( my $bytes = $file->{size} ; $bytes > 0 ; ) { $bytes -= read $fp, $buf = '', $bytes > 8192 ? 8192 : $bytes;print FP $buf; }
 			close FP;

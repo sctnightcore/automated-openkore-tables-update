@@ -29,45 +29,6 @@ sub new {
     # exit;
 # }
 
-# if ( $opt->{check_files} ) {
-    # print "Checking whether files have changed on the server.\n";
-    # foreach ( @$patches ) {
-        # my $file = "$opt->{download_dir}/$_";
-
-        # next if !-f $file;
-
-        # if ( ftp_data( $_ )->{size} && -s $file != ftp_data( $_ )->{size} ) {
-            # print "File [$_] has changed size. Renaming to [$_.bak] and downloading a new copy.\n";
-            # rename $file => "$file.bak";
-            # unlink "$file.yml";
-        # } elsif ( ftp_data( $_ )->{time} && ftp_data( $_ )->{time} != ( stat( $file ) )[9] ) {
-            # print "File [$_] has changed modification date. Renaming to [$_.bak] and downloading a new copy.\n";
-            # rename $file => "$file.bak";
-            # unlink "$file.yml";
-        # }
-    # }
-# }
-
-# my $recent_patches = [ grep {$_} ( reverse @$patches )[ 0 .. 40 ] ];
-
-# my $downloaded = 0;
-# foreach ( reverse @$recent_patches ) {
-    # my $url  = "$opt->{download_base_url}/$_";
-    # my $file = "$opt->{download_dir}/$_";
-
-    # next if -f $file;
-
-    # unlink "$file.yml";
-
-    # print "Downloading file [$file]... ";
-    # ftp->get( $_ => $file );
-    # print "done.\n";
-
-    # my $time = ftp_data( $_ )->{time};
-    # utime $time, $time, $file;
-    # $downloaded++;
-# }
-# print "No new files found.\n" if !$downloaded;
 
 # # Extract file lists from each gpf.
 # foreach ( reverse @$recent_patches ) {
@@ -85,22 +46,6 @@ sub new {
     # shift @lines;    # # of files: ...
 
     # my $files = { map {/^  (.*) \((\d+)\)/o} @lines };
-    # YAML::Syck::DumpFile( "$file.yml", $files );
-# }
-
-# # Extract file lists from each rgz.
-# foreach ( reverse @$recent_patches ) {
-    # my $file = "$opt->{download_dir}/$_";
-
-    # next if $file !~ /\.rgz$/o;
-    # next if !-f $file;
-    # next if -f "$file.yml";
-
-    # # Extract file list.
-    # my $data = backticks( 'rgz.pl', '-l', $file );
-    # my @lines = split /\n/, $data;
-
-    # my $files = { map { /^f\s+(\d+)\s+(.*)$/o ? ( $2 => $1 ) : () } @lines };
     # YAML::Syck::DumpFile( "$file.yml", $files );
 # }
 
@@ -278,9 +223,9 @@ sub ftp {
     if ( !$ftp ) {
         my $uri = URI->new( $opt->{download_base_url} );
         $ftp = Net::FTP->new( $uri->host, Debug => 1, Passive => 1 );
-		if(!$ftp) {
-			print "Error while connecting to FTP (check connection or URL)\n";
-		}
+        if(!$ftp) {
+            print "Error while connecting to FTP (check connection or URL)\n";
+        }
         $ftp->login;
         $ftp->binary;
         $ftp->cwd( $uri->path );
@@ -298,11 +243,13 @@ sub ftp_data {
 
 sub backticks {
     my ( @cmd ) = @_;
-
+use Data::Dumper;
+print Dumper @cmd;
     my $pid = open( my $fp, '-|' );
-
+    
     if ( !$pid ) {
         ( $>, $) ) = ( $<, $( );
+
         exec( @cmd ) || die "Unable to exec program @cmd: $!\n";
     }
 
@@ -473,6 +420,7 @@ sub download_ftp_files {
 sub extract_all_rgz_files {
     my ($self, $recent_patches, $current_dir) = @_;
     # Extract file lists from each rgz.
+	my $download_dir = $current_dir . $opt->{'download_dir'};
     foreach ( reverse @$recent_patches ) {
         my $file = $current_dir."$opt->{download_dir}/$_";
 
@@ -482,7 +430,8 @@ sub extract_all_rgz_files {
 
         # Extract file list.
         print "[SCRIPT] Extracting ".$file.".\n";
-        my $data = backticks( 'rgz.pl', '-l', $file );
+
+        my $data = backticks( $current_dir.'/scripts/rgz.pl', '-x -v',  $download_dir, $file );
         my @lines = split /\n/, $data;
 
         my $files = { map { /^f\s+(\d+)\s+(.*)$/o ? ( $2 => $1 ) : () } @lines };

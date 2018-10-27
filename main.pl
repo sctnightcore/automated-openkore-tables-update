@@ -94,5 +94,7 @@ $patch->download_ftp_files($recent_patches, $current_dir);
 print "[SCRIPT] Extracting RGZ Files...\n";
 $patch->extract_all_rgz_files($recent_patches, $current_dir);
 
+print "[SCRIPT] Extracting GPF Files...\n";
+#$patch->extract_all_rgz_files($recent_patches, $current_dir);
 
 exit;
