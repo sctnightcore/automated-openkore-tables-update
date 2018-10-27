@@ -1,0 +1,11 @@
+# Backup files
+*~
+.#*
+*.old
+*.bak
+*.BAK
+*.orig
+*.rej
+
+# Auto generated files
+*.o
