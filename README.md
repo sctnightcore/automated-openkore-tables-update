@@ -28,8 +28,16 @@ https://www.ubuntu.com/download/desktop
     2.3 – install the necessary modules using the following commands
         sudo cpan Config::IniFiles
         sudo cpan YAML::Syck
-    2.4 - open terminal and go to where automated-openkore-tables-update is located
-        cd Desktop/
-	2.5 - give chmod 777 to automated-openkore-tables-update
-		sudo chmod 777 -R automated-openkore-tables-update/
+	2.4 - go to grf_extract and make the app
+		open terminal
+		2.4.1 - go to folder
+			cd automated-openkore-tables-update/scripts/grf_extract
+		2.4.1 - make grf_extract
+			make
+    2.5 -  give chmod 777 to the project
+		open terminal
+		2.5.1 - go to where automated-openkore-tables-update is located
+			cd Desktop/
+		2.5.2 - give chmod 777 to automated-openkore-tables-update
+			sudo chmod 777 -R automated-openkore-tables-update/
 	

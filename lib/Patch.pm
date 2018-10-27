@@ -23,32 +23,6 @@ sub new {
     return bless {}, $class;
 }
     
-# if ( !grep { -f "$_/grf_extract" } split ':', $ENV{PATH} ) {
-    # print "This program requires grf_extract. Please make sure it is in your \$PATH.\n";
-    # print "grf_extract is available at https://github.com/OpenKore/grf\n";
-    # exit;
-# }
-
-
-# # Extract file lists from each gpf.
-# foreach ( reverse @$recent_patches ) {
-    # my $file = "$opt->{download_dir}/$_";
-
-    # next if $file !~ /\.g[pr]f$/o;
-    # next if !-f $file;
-    # next if -f "$file.yml";
-
-    # # Extract file list.
-    # my $data = backticks( 'grf_extract', $file );
-    # my @lines = split /\n/, $data;
-
-    # shift @lines;    # Loading GRF: ...
-    # shift @lines;    # # of files: ...
-
-    # my $files = { map {/^  (.*) \((\d+)\)/o} @lines };
-    # YAML::Syck::DumpFile( "$file.yml", $files );
-# }
-
 # # Merge the gpf file lists together to find the latest version of each file.
 # my $latest = {};
 # foreach my $p ( reverse @$patches ) {
@@ -437,5 +411,26 @@ sub extract_all_rgz_files {
         YAML::Syck::DumpFile( "$file.yml", $files );
     }
 }
+
+sub extract_all_rgz_files {
+    my ($self, $recent_patches, $current_dir) = @_;
+	
+	# Extract file lists from each gpf.
+	my $download_dir = $current_dir . $opt->{'download_dir'};
+	foreach ( reverse @$recent_patches ) {
+		my $file = $current_dir."$opt->{download_dir}/$_";
+		next if $file !~ /\.g[pr]f$/o;
+		next if !-f $file;
+		next if -f "$file.yml";
+		
+		# Extract file list.
+		my $data = backticks( 'grf_extract', $file );
+		my @lines = split /\n/, $data;
+		shift @lines;     Loading GRF: ...
+		shift @lines;      of files: ...
+		my $files = { map {/^  (.*) \((\d+)\)/o} @lines };
+		YAML::Syck::DumpFile( "$file.yml", $files );
+	}
+}	
 
 1;
