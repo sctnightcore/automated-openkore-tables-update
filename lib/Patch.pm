@@ -89,16 +89,16 @@ sub convert_iteminfo_lub {
     close FP;
 
     # Fix unicode characters.
-    fix_unicode_file( $current_dir.$opt->{download_dir}."idnum2itemdisplaynametable.txt" );
-    fix_unicode_file( $current_dir.$opt->{download_dir}."idnum2itemdesctable.txt" );
+    fix_unicode_file( $current_dir.$opt->{download_dir}."/idnum2itemdisplaynametable.txt" );
+    fix_unicode_file( $current_dir.$opt->{download_dir}."/idnum2itemdesctable.txt" );
 
     # Remove unnecessary zero-slot entries from itemslotcounttable.txt.
     local $/;
-    open FP, '<', $current_dir.$opt->{download_dir}."itemslotcounttable.txt";
+    open FP, '<', $current_dir.$opt->{download_dir}."/itemslotcounttable.txt";
     $txt = <FP>;
     close FP;
     $txt =~ s/^(\d+)#0#\n//gmos;
-    open FP, '>', $current_dir.$opt->{download_dir}."itemslotcounttable.txt";
+    open FP, '>', $current_dir.$opt->{download_dir}."/itemslotcounttable.txt";
     print FP $txt;
     close FP;
 }
