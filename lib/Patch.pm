@@ -62,7 +62,7 @@ sub new {
 # We use https://github.com/ROClientSide/Translation/tree/master/Dev/Tools/SeperateItemInfo to extract the files.
 sub convert_iteminfo_lub {
     my ($self, $current_dir) = @_;
-	my $extract_dir = $current_dir."$opt->{download_dir}/extracted_files/system";
+	my $extract_dir = $current_dir."$opt->{download_dir}/system";
 
     return if !-f "$extract_dir/iteminfo.lub";
 
@@ -73,37 +73,36 @@ sub convert_iteminfo_lub {
     my $cwd = Cwd::cwd;
 
     return if !chdir $extract_dir;
-	backticks( $current_dir.'/scripts/SeperateItemInfo.lua', $extract_dir, $extract_dir);
-
-    chdir $cwd;
+    my @args = ('lua', $current_dir.'/scripts/SeperateItemInfo.lua', $extract_dir, $extract_dir);
+    system @args;
 
     # Move all of the files from $extract_dir/idnum into $extract_dir, and delete the now-empty directory.
     opendir DIR, "$extract_dir/";
-    rename "$extract_dir/$_" => "$extract_dir/$_" foreach grep { -f "$extract_dir/$_" } readdir DIR;
+    rename "$extract_dir/$_" => $current_dir."$opt->{download_dir}/$_" foreach grep { -f "$extract_dir/$_" } readdir DIR;
     closedir DIR;
     rmdir "$extract_dir/";
 
     # Replace all spaces with underscores in the item name table.
     local $/;
-    open FP, '<', "$extract_dir/idnum2itemdisplaynametable.txt";
+    open FP, '<', $current_dir.$opt->{download_dir}."/idnum2itemdisplaynametable.txt";
     my $txt = <FP>;
     close FP;
     $txt =~ s/ /_/gos;
-    open FP, '>', "$extract_dir/idnum2itemdisplaynametable.txt";
+    open FP, '>', $current_dir.$opt->{download_dir}."/idnum2itemdisplaynametable.txt";
     print FP $txt;
     close FP;
 
     # Fix unicode characters.
-    fix_unicode_file( "$extract_dir/idnum2itemdisplaynametable.txt" );
-    fix_unicode_file( "$extract_dir/idnum2itemdesctable.txt" );
+    fix_unicode_file( $current_dir.$opt->{download_dir}."idnum2itemdisplaynametable.txt" );
+    fix_unicode_file( $current_dir.$opt->{download_dir}."idnum2itemdesctable.txt" );
 
     # Remove unnecessary zero-slot entries from itemslotcounttable.txt.
     local $/;
-    open FP, '<', "$extract_dir/itemslotcounttable.txt";
+    open FP, '<', $current_dir.$opt->{download_dir}."itemslotcounttable.txt";
     $txt = <FP>;
     close FP;
     $txt =~ s/^(\d+)#0#\n//gmos;
-    open FP, '>', "$extract_dir/itemslotcounttable.txt";
+    open FP, '>', $current_dir.$opt->{download_dir}."itemslotcounttable.txt";
     print FP $txt;
     close FP;
 }

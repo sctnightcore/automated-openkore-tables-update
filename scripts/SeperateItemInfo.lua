@@ -1,6 +1,6 @@
-local inputFolder = arg[1]
-local outputFolder = arg[2]
-local importFile =  arg[1] .. "/iteminfo.lub"
+inputFolder = arg[1]
+outputFolder = arg[2]
+importFile =  arg[1] .. "/iteminfo.lub"
 
 dofile(importFile)
 
