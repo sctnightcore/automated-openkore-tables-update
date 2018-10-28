@@ -23,9 +23,6 @@ sub new {
     return bless {}, $class;
 }
     
-# # New clients use iteminfo.lub instead of idnum2*.txt files. If we have an iteminfo.lub file, extract it.
-# convert_iteminfo_lub();
-
 # # The hat effect data source file is only in the kRO grf file. Grab a copy from github.
 # my $hat_url  = 'https://raw.githubusercontent.com/ROClientSide/kRO-RAW-Mains/master/data/luafiles514/lua%20files/hateffectinfo/hateffectinfo.lua';
 # my $hat_data = $ua->get( $hat_url );
@@ -65,42 +62,26 @@ sub new {
 # We use https://github.com/ROClientSide/Translation/tree/master/Dev/Tools/SeperateItemInfo to extract the files.
 sub convert_iteminfo_lub {
     my ($self, $current_dir) = @_;
-	my $extract_dir = $current_dir."$opt->{download_dir}/extracted_files";
+	my $extract_dir = $current_dir."$opt->{download_dir}/extracted_files/system";
 
     return if !-f "$extract_dir/iteminfo.lub";
 
-    my $separator_url  = 'https://github.com/ROClientSide/Translation/blob/master/Dev/Tools/SeperateItemInfo/SeperateItemInfo.lua?raw=true';
-    my $separator_data = $ua->get( $separator_url );
-    if ( $separator_data && $separator_data->is_success && $separator_data->content ) {
-        open FP, '>', "$extract_dir/SeparateItemInfo.lua";
-        print FP $separator_data->content;
-        close FP;
-    }
-
-    return if !-f "$extract_dir/SeparateItemInfo.lua";
-
     # SeparateItemInfo.lua requires:
     #   1. Must be run with a 32-bit lua.
-    #   2. iteminfo.lub must be named "itemInfo.lub" (case sensitive!).
-    #   3. Must be run in the same directory as itemInfo.lub.
+    #   2. iteminfo.lub must be named (case sensitive!).
+
     my $cwd = Cwd::cwd;
 
     return if !chdir $extract_dir;
-    rename 'iteminfo.lub' => 'itemInfo.lub';
-    system 'lua32', 'SeparateItemInfo.lua';
-    rename 'itemInfo.lub' => 'iteminfo.lub';
+	backticks( $current_dir.'/scripts/SeperateItemInfo.lua', $extract_dir, $extract_dir);
+
     chdir $cwd;
 
-    if ( !-d "$extract_dir/idnum" ) {
-        print "SeperateItemInfo.lua failed to extract data from itemInfo.lub.\n";
-        return;
-    }
-
     # Move all of the files from $extract_dir/idnum into $extract_dir, and delete the now-empty directory.
-    opendir DIR, "$extract_dir/idnum";
-    rename "$extract_dir/idnum/$_" => "$extract_dir/$_" foreach grep { -f "$extract_dir/idnum/$_" } readdir DIR;
+    opendir DIR, "$extract_dir/";
+    rename "$extract_dir/$_" => "$extract_dir/$_" foreach grep { -f "$extract_dir/$_" } readdir DIR;
     closedir DIR;
-    rmdir "$extract_dir/idnum";
+    rmdir "$extract_dir/";
 
     # Replace all spaces with underscores in the item name table.
     local $/;
