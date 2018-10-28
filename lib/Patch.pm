@@ -412,7 +412,7 @@ sub extract_all_rgz_files {
     }
 }
 
-sub extract_all_rgz_files {
+sub extract_all_gpf_files {
     my ($self, $recent_patches, $current_dir) = @_;
 	
 	# Extract file lists from each gpf.
@@ -424,12 +424,47 @@ sub extract_all_rgz_files {
 		next if -f "$file.yml";
 		
 		# Extract file list.
-		my $data = backticks( 'grf_extract', $file );
+		print "[SCRIPT] Extracting ".$file.".\n";
+		my $data = backticks( $current_dir.'/scripts/grf_extract/grf_extract_64', $file );
 		my @lines = split /\n/, $data;
-		shift @lines;     Loading GRF: ...
-		shift @lines;      of files: ...
+		shift @lines;
+		shift @lines;
 		my $files = { map {/^  (.*) \((\d+)\)/o} @lines };
 		YAML::Syck::DumpFile( "$file.yml", $files );
+	}
+
+	# Merge the gpf file lists together to find the latest version of each file.
+	my $latest = {};
+	foreach my $p ( reverse @$patches ) {
+		my $yml = $current_dir."$opt->{download_dir}/$p.yml";
+
+		next if !-f $yml;
+
+		my $files = YAML::Syck::LoadFile( $yml );
+		$latest->{$_} ||= $p foreach keys %$files;
+	}
+	YAML::Syck::DumpFile( $current_dir."$opt->{download_dir}/latest.yml", $latest );
+
+	# Extract the latest version of interesting files.
+	my $extracted = eval { YAML::Syck::LoadFile( $current_dir."$opt->{download_dir}/extracted_files.yml" ) } || {};
+	my $extract_dir = $current_dir."$opt->{download_dir}/extracted_files";
+	mkdir $current_dir.$extract_dir if !-d $extract_dir;
+	foreach ( sort keys %$latest ) {
+		next if !/\.(txt|lua|lub|gat|gnd|rsw)$/;
+
+		my ( $base ) = m{([^/\\]+)$};
+		next if $extracted->{$_} && $latest->{$_} eq $extracted->{$_} && -f $current_dir."$extract_dir/$base";
+
+		if ( $latest->{$_} =~ /\.g[pr]f$/ ) {
+			system 'grf_extract', $current_dir."$opt->{download_dir}/$latest->{$_}", $_ => $current_dir."$extract_dir/$base";
+		} elsif ( $latest->{$_} =~ /\.rgz$/ ) {
+			system 'rgz.pl', '-x', $current_dir."$opt->{download_dir}/$latest->{$_}", $_ => $current_dir."$extract_dir/$base";
+		}
+
+		# GRF files typically have a screwed up mix of UCS-2 and UTF-8. Fix them.
+		fix_unicode_file( $current_dir."$extract_dir/$base" ) if $base =~ /txt$/;
+
+		$extracted->{$_} = $latest->{$_};
 	}
 }	
 
