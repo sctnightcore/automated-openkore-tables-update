@@ -64,6 +64,9 @@ sub new {
 # The way we do this is by wrapping the lub in a piece of lua code which loads the lub, then writes out the data structures the lub sets up.
 # We use https://github.com/ROClientSide/Translation/tree/master/Dev/Tools/SeperateItemInfo to extract the files.
 sub convert_iteminfo_lub {
+    my ($self, $current_dir) = @_;
+	my $extract_dir = $current_dir."$opt->{download_dir}/extracted_files";
+
     return if !-f "$extract_dir/iteminfo.lub";
 
     my $separator_url  = 'https://github.com/ROClientSide/Translation/blob/master/Dev/Tools/SeperateItemInfo/SeperateItemInfo.lua?raw=true';

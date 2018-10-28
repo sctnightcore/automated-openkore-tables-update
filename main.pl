@@ -97,4 +97,8 @@ $patch->extract_all_rgz_files($recent_patches, $current_dir);
 print "[SCRIPT] Extracting GPF Files...\n";
 $patch->extract_all_gpf_files($recent_patches, $current_dir);
 
+# extract infos
+print "[SCRIPT] Converting itemInfo.lub...\n";
+$patch->convert_iteminfo_lub($current_dir);
+
 exit;
