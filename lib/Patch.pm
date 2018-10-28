@@ -14,6 +14,7 @@ use YAML::Syck;
 
 my $ua;
 my $opt;
+$|++;
 
 sub new {
     my $class = shift;
@@ -62,17 +63,13 @@ sub new {
 # We use https://github.com/ROClientSide/Translation/tree/master/Dev/Tools/SeperateItemInfo to extract the files.
 sub convert_iteminfo_lub {
     my ($self, $current_dir) = @_;
-	my $extract_dir = $current_dir."$opt->{download_dir}/system";
+    my $extract_dir = $current_dir."$opt->{download_dir}/system";
 
     return if !-f "$extract_dir/iteminfo.lub";
 
     # SeparateItemInfo.lua requires:
     #   1. Must be run with a 32-bit lua.
     #   2. iteminfo.lub must be named (case sensitive!).
-
-    my $cwd = Cwd::cwd;
-
-    return if !chdir $extract_dir;
     my @args = ('lua', $current_dir.'/scripts/SeperateItemInfo.lua', $extract_dir, $extract_dir);
     system @args;
 
@@ -80,7 +77,6 @@ sub convert_iteminfo_lub {
     opendir DIR, "$extract_dir/";
     rename "$extract_dir/$_" => $current_dir."$opt->{download_dir}/$_" foreach grep { -f "$extract_dir/$_" } readdir DIR;
     closedir DIR;
-    rmdir "$extract_dir/";
 
     # Replace all spaces with underscores in the item name table.
     local $/;
