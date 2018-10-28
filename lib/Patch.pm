@@ -23,40 +23,6 @@ sub new {
     return bless {}, $class;
 }
     
-# # Merge the gpf file lists together to find the latest version of each file.
-# my $latest = {};
-# foreach my $p ( reverse @$patches ) {
-    # my $yml = "$opt->{download_dir}/$p.yml";
-
-    # next if !-f $yml;
-
-    # my $files = YAML::Syck::LoadFile( $yml );
-    # $latest->{$_} ||= $p foreach keys %$files;
-# }
-# YAML::Syck::DumpFile( "$opt->{download_dir}/latest.yml", $latest );
-
-# # Extract the latest version of interesting files.
-# my $extracted = eval { YAML::Syck::LoadFile( "$opt->{download_dir}/extracted_files.yml" ) } || {};
-my $extract_dir = "/extracted_files";
-# mkdir $extract_dir if !-d $extract_dir;
-# foreach ( sort keys %$latest ) {
-    # next if !/\.(txt|lua|lub|gat|gnd|rsw)$/;
-
-    # my ( $base ) = m{([^/\\]+)$};
-    # next if $extracted->{$_} && $latest->{$_} eq $extracted->{$_} && -f "$extract_dir/$base";
-
-    # if ( $latest->{$_} =~ /\.g[pr]f$/ ) {
-        # system 'grf_extract', "$opt->{download_dir}/$latest->{$_}", $_ => "$extract_dir/$base";
-    # } elsif ( $latest->{$_} =~ /\.rgz$/ ) {
-        # system 'rgz.pl', '-x', "$opt->{download_dir}/$latest->{$_}", $_ => "$extract_dir/$base";
-    # }
-
-    # # GRF files typically have a screwed up mix of UCS-2 and UTF-8. Fix them.
-    # fix_unicode_file( "$extract_dir/$base" ) if $base =~ /txt$/;
-
-    # $extracted->{$_} = $latest->{$_};
-# }
-
 # # New clients use iteminfo.lub instead of idnum2*.txt files. If we have an iteminfo.lub file, extract it.
 # convert_iteminfo_lub();
 
@@ -393,7 +359,7 @@ sub download_ftp_files {
 sub extract_all_rgz_files {
     my ($self, $recent_patches, $current_dir) = @_;
     # Extract file lists from each rgz.
-	my $download_dir = $current_dir . $opt->{'download_dir'};
+    my $download_dir = $current_dir . $opt->{'download_dir'};
     foreach ( reverse @$recent_patches ) {
         my $file = $current_dir."$opt->{download_dir}/$_";
 
@@ -414,58 +380,59 @@ sub extract_all_rgz_files {
 
 sub extract_all_gpf_files {
     my ($self, $recent_patches, $current_dir) = @_;
-	
-	# Extract file lists from each gpf.
-	my $download_dir = $current_dir . $opt->{'download_dir'};
-	foreach ( reverse @$recent_patches ) {
-		my $file = $current_dir."$opt->{download_dir}/$_";
-		next if $file !~ /\.g[pr]f$/o;
-		next if !-f $file;
-		next if -f "$file.yml";
-		
-		# Extract file list.
-		print "[SCRIPT] Extracting ".$file.".\n";
-		my $data = backticks( $current_dir.'/scripts/grf_extract/grf_extract_64', $file );
-		my @lines = split /\n/, $data;
-		shift @lines;
-		shift @lines;
-		my $files = { map {/^  (.*) \((\d+)\)/o} @lines };
-		YAML::Syck::DumpFile( "$file.yml", $files );
-	}
+    
+    # Extract file lists from each gpf.
+    my $download_dir = $current_dir . $opt->{'download_dir'};
+    foreach ( reverse @$recent_patches ) {
+        my $file = $current_dir."$opt->{download_dir}/$_";
+        next if $file !~ /\.g[pr]f$/o;
+        next if !-f $file;
+        next if -f "$file.yml";
+        
+        # Extract file list.
+        
+        my $data = backticks( $current_dir.'/scripts/grf_extract/grf_extract_64', $file );
+        my @lines = split /\n/, $data;
+        shift @lines;
+        shift @lines;
+        my $files = { map {/^  (.*) \((\d+)\)/o} @lines };
+        YAML::Syck::DumpFile( "$file.yml", $files );
+    }
 
-	# Merge the gpf file lists together to find the latest version of each file.
-	my $latest = {};
-	foreach my $p ( reverse @$patches ) {
-		my $yml = $current_dir."$opt->{download_dir}/$p.yml";
+    # Merge the gpf file lists together to find the latest version of each file.
+    my $latest = {};
+    foreach my $p ( reverse @$recent_patches ) {
+        my $yml = $current_dir."$opt->{download_dir}/$p.yml";
 
-		next if !-f $yml;
+        next if !-f $yml;
 
-		my $files = YAML::Syck::LoadFile( $yml );
-		$latest->{$_} ||= $p foreach keys %$files;
-	}
-	YAML::Syck::DumpFile( $current_dir."$opt->{download_dir}/latest.yml", $latest );
+        my $files = YAML::Syck::LoadFile( $yml );
+        $latest->{$_} ||= $p foreach keys %$files;
+    }
+    YAML::Syck::DumpFile( $current_dir."$opt->{download_dir}/latest.yml", $latest );
 
-	# Extract the latest version of interesting files.
-	my $extracted = eval { YAML::Syck::LoadFile( $current_dir."$opt->{download_dir}/extracted_files.yml" ) } || {};
-	my $extract_dir = $current_dir."$opt->{download_dir}/extracted_files";
-	mkdir $current_dir.$extract_dir if !-d $extract_dir;
-	foreach ( sort keys %$latest ) {
-		next if !/\.(txt|lua|lub|gat|gnd|rsw)$/;
+    # Extract the latest version of interesting files.
+    my $extracted = eval { YAML::Syck::LoadFile( $current_dir."$opt->{download_dir}/extracted_files.yml" ) } || {};
+    my $extract_dir = $current_dir."$opt->{download_dir}/extracted_files";
+    mkdir $extract_dir if !-d $extract_dir;
+    foreach ( sort keys %$latest ) {
+        next if !/\.(txt|lua|lub|gat|gnd|rsw)$/;
 
-		my ( $base ) = m{([^/\\]+)$};
-		next if $extracted->{$_} && $latest->{$_} eq $extracted->{$_} && -f $current_dir."$extract_dir/$base";
+        my ( $base ) = m{([^/\\]+)$};
+        next if $extracted->{$_} && $latest->{$_} eq $extracted->{$_} && -f "$extract_dir/$base";
 
-		if ( $latest->{$_} =~ /\.g[pr]f$/ ) {
-			system 'grf_extract', $current_dir."$opt->{download_dir}/$latest->{$_}", $_ => $current_dir."$extract_dir/$base";
-		} elsif ( $latest->{$_} =~ /\.rgz$/ ) {
-			system 'rgz.pl', '-x', $current_dir."$opt->{download_dir}/$latest->{$_}", $_ => $current_dir."$extract_dir/$base";
-		}
+        if ( $latest->{$_} =~ /\.g[pr]f$/ ) {
+            print "[SCRIPT] Extracting ".$latest->{$_}.".\n";
+            system $current_dir.'/scripts/grf_extract/grf_extract_64', $current_dir."$opt->{download_dir}/$latest->{$_}", $_ => "$extract_dir/$base";
+        } elsif ( $latest->{$_} =~ /\.rgz$/ ) {
+            system  $current_dir.'/scripts/rgz.pl',  $download_dir, '-x', $current_dir."$opt->{download_dir}/$latest->{$_}", $_ => "$extract_dir/$base";
+        }
 
-		# GRF files typically have a screwed up mix of UCS-2 and UTF-8. Fix them.
-		fix_unicode_file( $current_dir."$extract_dir/$base" ) if $base =~ /txt$/;
+        # GRF files typically have a screwed up mix of UCS-2 and UTF-8. Fix them.
+        fix_unicode_file( "$extract_dir/$base" ) if $base =~ /txt$/;
 
-		$extracted->{$_} = $latest->{$_};
-	}
-}	
+        $extracted->{$_} = $latest->{$_};
+    }
+}
 
 1;
