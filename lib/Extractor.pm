@@ -5,22 +5,18 @@ use strict;
 use warnings;
 
 use Disassemble::X86;
-use Getopt::Long;
 use Time::Piece;
-
-my $opt = {
-	recvpackets => 'recvpackets.txt',
-	sync        => 'sync.txt',
-	shuffle     => 'shuffle.txt',
-	servers     => 'servers.txt',
-	server      => 'International - iRO: Re:Start',
-};
 
 my $cryptkeys;
 my $recvpackets;
 my $old_recvpackets;
 my $old_shuffle;
 my $ragexe;
+
+sub new {
+    my $class = shift;
+    return bless {}, $class;
+}
 
 sub load_current_tables_files {
 	my ($self, $ragexe, $old_recvpackets, $old_shuffle ) = @_;
