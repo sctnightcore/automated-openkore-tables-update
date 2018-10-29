@@ -13,9 +13,11 @@ my $old_recvpackets;
 my $old_shuffle;
 my $ragexe;
 my $shuffle;
+my $opt;
 
 sub new {
     my $class = shift;
+	$opt->{'verbose'} = 0;
     return bless {}, $class;
 }
 
