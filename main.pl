@@ -72,7 +72,7 @@ if (!$command_line_arguments->{'force'} && !$patch->patch_allowed() ) {
 
 # steps to download files
 print "[SCRIPT] Downloading and checking patch list file.\n";
-$utils->createDir($current_dir.$config->{'download_dir'});
+$utils->createDir($current_dir.'/'.$config->{'download_dir'});
 
 my $patch_list = $patch->check_patch_list();
     
@@ -105,7 +105,7 @@ $patch->convert_iteminfo_lub($current_dir);
 
 # move tables files to openkore dir
 print "[SCRIPT] Moving files to Openkore Git DIR...\n";
-$patch->move_files_to_git_directory();
+$patch->move_files_to_git_directory($current_dir);
 
 # move tables files to openkore dir
 print "[SCRIPT] Loading Current Tables Files...\n";
