@@ -200,7 +200,7 @@ sub extract_recvpackets {
 
 	my $stack = [];
 	while ( my $op = $disasm->disasm ) {
-		printf "%04x  %-14s  %s\n", $disasm->op_start, unpack( 'H*', substr $recvpackets_code, $disasm->op_start, $disasm->op_len ), $op;
+		printf "%04x  %-14s  %s\n", $disasm->op_start, unpack( 'H*', substr $recvpackets_code, $disasm->op_start, $disasm->op_len ), $op if $opt->{verbose};
 
 		# There are two ways to add to the stack: "mov dword[ss:ebp+$offset],$val" and "push dword(0x1)".
 		if ( $op =~ /^mov dword\[ss:ebp\+0x([0-9a-f]+)\],0x([0-9a-f]+)/o ) {
@@ -248,7 +248,7 @@ sub extract_cryptkeys {
 
 		my $stack = [];
 		while ( my $op = $disasm->disasm ) {
-			printf "%04x  %-14s  %s\n", $disasm->op_start, unpack( 'H*', substr $cryptkeys_code, $disasm->op_start, $disasm->op_len ), $op;
+			printf "%04x  %-14s  %s\n", $disasm->op_start, unpack( 'H*', substr $cryptkeys_code, $disasm->op_start, $disasm->op_len ), $op if $opt->{verbose};;
 			if ( $op =~ /^mov dword\[ecx\+0x([0-9a-f]+)\],0x([0-9a-f]+)/o ) {
 				push @$stack, $2;
 			}

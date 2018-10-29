@@ -29,7 +29,7 @@ sub new {
 sub convert_iteminfo_lub {
     my ($self, $current_dir) = @_;
     my $extract_dir = $current_dir."/$opt->{download_dir}/extracted_files/system";
-	my $extracted_files_dir =  $current_dir."/$opt->{download_dir}/extracted_files";
+    my $extracted_files_dir =  $current_dir."/$opt->{download_dir}/extracted_files";
 
     return if !-f "$extract_dir/iteminfo.lub";
 
@@ -392,6 +392,7 @@ sub extract_all_gpf_files {
         fix_unicode_file( "$extract_dir/$base" ) if $base =~ /txt$/;
 
         $extracted->{$_} = $latest->{$_};
+        YAML::Syck::DumpFile( $current_dir.'/'."$opt->{download_dir}/extracted_files.yml", $extracted );
     }
 }
 
