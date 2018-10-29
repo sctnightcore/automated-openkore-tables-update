@@ -12,6 +12,7 @@ my $recvpackets;
 my $old_recvpackets;
 my $old_shuffle;
 my $ragexe;
+my $shuffle;
 
 sub new {
     my $class = shift;
@@ -32,7 +33,7 @@ sub load_current_tables_files {
 # Generate a new shuffle.txt from the old and new recvpackets.txt.
 sub generate_shuffle {
 	my ( $recvpackets ) = @_;
-	$new_recvpackets = load_recvpackets( $recvpackets );
+	my $new_recvpackets = load_recvpackets( $recvpackets );
 	# Unshuffle the old recvpackets.
 	if ( $old_shuffle && @$old_shuffle ) {
 		my $reverse_map = { map { $_->{to} => $_->{from} } @$old_shuffle };
@@ -56,19 +57,17 @@ sub generate_shuffle {
 	}
 
 	# Generate the shuffle!
-	my $shuffle = [];
+	$shuffle = [];
 	foreach ( 0 .. $#$new_recvpackets ) {
 		my $old = $old_recvpackets->[$_]->{id};
 		my $new = $new_recvpackets->[$_]->{id};
 		next if $old eq $new;
 		push @$shuffle, { from => $old, to => $new };
 	}
-
-	$shuffle;
 }
 
 sub write_shuffle {
-	my ( $file, $shuffle ) = @_;
+	my ( $file ) = @_;
 
 	open FP, '>', $file;
 	print FP sprintf "# Generated: %sZ\n", gmtime()->datetime;
