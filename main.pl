@@ -104,7 +104,7 @@ print "[SCRIPT] Converting itemInfo.lub...\n";
 $patch->convert_iteminfo_lub($current_dir);
 
 # move tables files to openkore dir
-print "[SCRIPT] Loading Current Tables Files...\n";
+print "[SCRIPT] Loading Current Tables Files and Ragexe (also extract packets here)...\n";
 $extractor->load_current_tables_files( $current_dir.'/'.$config->{'download_dir'}.'/extracted_files/'.$config->{'executable'}, $config->{'git_connection_dir'}."/recvpackets.txt", $config->{'git_connection_dir'}."/shuffle.txt" );
 
 # move tables files to openkore dir

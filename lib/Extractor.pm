@@ -68,7 +68,7 @@ sub generate_shuffle {
 }
 
 sub write_shuffle {
-	my ( $file ) = @_;
+	my ( $self, $file ) = @_;
 
 	open FP, '>', $file;
 	print FP sprintf "# Generated: %sZ\n", gmtime()->datetime;
@@ -111,7 +111,7 @@ sub load_shuffle {
 }
 
 sub update_cryptkeys {
-	my ( $file, $block ) = @_;
+	my ( $self, $file, $block ) = @_;
 
 	return if !-f $file;
 
@@ -147,7 +147,7 @@ sub update_cryptkeys {
 }
 
 sub write_recvpackets {
-	my ( $file ) = @_;
+	my ( $self, $file ) = @_;
 
 	open FP, '>', $file;
 	print FP sprintf "# Generated: %sZ\n", gmtime()->datetime;
@@ -160,7 +160,7 @@ sub write_recvpackets {
 # Generate sync.txt.
 # Find a block of 168 consecutive packets with a "2 2 0" signature. Ideally we'd look for packet IDs (085A-0883, 0917-0940) => (0884-08AD, 0941-096A), but packet shuffling makes that hard.
 sub write_sync {
-	my ( $file ) = @_;
+	my ( $self, $file ) = @_;
 
 	open FP, '>', $file;
 	print FP sprintf "# Generated: %sZ\n", gmtime()->datetime;
