@@ -40,30 +40,30 @@ sub convert_iteminfo_lub {
 
     # Move all of the files from $extract_dir/idnum into $extract_dir, and delete the now-empty directory.
     opendir DIR, "$extract_dir/";
-    rename "$extract_dir/$_" => $current_dir."/$opt->{download_dir}/$_" foreach grep { -f "$extract_dir/$_" } readdir DIR;
+    rename "$extract_dir/$_" => $current_dir."/$opt->{download_dir}/extracted_files/$_" foreach grep { -f "$extract_dir/$_" } readdir DIR;
     closedir DIR;
 
     # Replace all spaces with underscores in the item name table.
     local $/;
-    open FP, '<', $current_dir.'/'.$opt->{download_dir}."/idnum2itemdisplaynametable.txt";
+    open FP, '<', $current_dir.'/'.$opt->{download_dir}."/extracted_files/idnum2itemdisplaynametable.txt";
     my $txt = <FP>;
     close FP;
     $txt =~ s/ /_/gos;
-    open FP, '>', $current_dir.'/'.$opt->{download_dir}."/idnum2itemdisplaynametable.txt";
+    open FP, '>', $current_dir.'/'.$opt->{download_dir}."/extracted_files/idnum2itemdisplaynametable.txt";
     print FP $txt;
     close FP;
 
     # Fix unicode characters.
-    fix_unicode_file( $current_dir.'/'.$opt->{download_dir}."/idnum2itemdisplaynametable.txt" );
-    fix_unicode_file( $current_dir.'/'.$opt->{download_dir}."/idnum2itemdesctable.txt" );
+    fix_unicode_file( $current_dir.'/'.$opt->{download_dir}."/extracted_files/idnum2itemdisplaynametable.txt" );
+    fix_unicode_file( $current_dir.'/'.$opt->{download_dir}."/extracted_files/idnum2itemdesctable.txt" );
 
     # Remove unnecessary zero-slot entries from itemslotcounttable.txt.
     local $/;
-    open FP, '<', $current_dir.'/'.$opt->{download_dir}."/itemslotcounttable.txt";
+    open FP, '<', $current_dir.'/'.$opt->{download_dir}."/extracted_files/itemslotcounttable.txt";
     $txt = <FP>;
     close FP;
     $txt =~ s/^(\d+)#0#\n//gmos;
-    open FP, '>', $current_dir.'/'.$opt->{download_dir}."/itemslotcounttable.txt";
+    open FP, '>', $current_dir.'/'.$opt->{download_dir}."/extracted_files/itemslotcounttable.txt";
     print FP $txt;
     close FP;
 }
