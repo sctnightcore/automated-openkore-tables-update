@@ -24,10 +24,10 @@ my $ragexe;
 
 sub load_current_tables_files {
 	my ($self, $ragexe, $old_recvpackets, $old_shuffle ) = @_;
-	my $cryptkeys       = extract_cryptkeys( $ragexe );
-	my $recvpackets     = extract_recvpackets( $ragexe );
-	my $old_recvpackets = load_recvpackets( $old_recvpackets );
-	my $old_shuffle     = load_shuffle( $old_shuffle );
+	$cryptkeys       = extract_cryptkeys( $ragexe );
+	$recvpackets     = extract_recvpackets( $ragexe );
+	$old_recvpackets = load_recvpackets( $old_recvpackets );
+	$old_shuffle     = load_shuffle( $old_shuffle );
 }
 
 # Load the old recvpackets.txt.
