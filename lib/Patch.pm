@@ -410,6 +410,9 @@ sub move_files_to_git_directory {
         'skillnametable.txt'             => 'skillnametable.txt',
         'hateffect_id_handle.txt'        => '../../hateffect_id_handle.txt',
         'hateffect_name.txt'             => '../../hateffect_name.txt',
+		'sync.txt'                       => 'sync.txt',
+		'recvpackets.txt'                => 'recvpackets.txt',
+		'shuffle.txt'                    => 'shuffle.txt',
     };
 
     foreach ( sort keys %$map ) {

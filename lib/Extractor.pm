@@ -22,20 +22,19 @@ sub new {
 }
 
 sub load_current_tables_files {
-	my ($self, $old_ragexe, $old_recvpackets, $old_shuffle ) = @_;
-	$ragexe = $old_ragexe;
+	my ($self, $old_ragexe_path, $old_recvpackets_path, $old_shuffle_path ) = @_;
+	$ragexe = $old_ragexe_path;
 	$cryptkeys       = extract_cryptkeys( $ragexe );
 	$recvpackets     = extract_recvpackets( $ragexe );
-	$old_recvpackets = load_recvpackets( $old_recvpackets );
-	$old_shuffle     = load_shuffle( $old_shuffle );
+	$old_recvpackets = load_recvpackets( $old_recvpackets_path );
+	$old_shuffle     = load_shuffle( $old_shuffle_path );
 }
 
 # Load the old recvpackets.txt.
 # If a shuffle.txt was given, unshuffle the old recvpackets.txt with it.
 # Generate a new shuffle.txt from the old and new recvpackets.txt.
 sub generate_shuffle {
-	my ( $recvpackets ) = @_;
-	my $new_recvpackets = load_recvpackets( $recvpackets );
+	my $new_recvpackets = $recvpackets;
 	# Unshuffle the old recvpackets.
 	if ( $old_shuffle && @$old_shuffle ) {
 		my $reverse_map = { map { $_->{to} => $_->{from} } @$old_shuffle };

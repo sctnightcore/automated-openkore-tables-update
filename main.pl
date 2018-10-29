@@ -104,10 +104,6 @@ print "[SCRIPT] Converting itemInfo.lub...\n";
 $patch->convert_iteminfo_lub($current_dir);
 
 # move tables files to openkore dir
-print "[SCRIPT] Moving files to Openkore Git DIR...\n";
-$patch->move_files_to_git_directory($current_dir);
-
-# move tables files to openkore dir
 print "[SCRIPT] Loading Current Tables Files...\n";
 $extractor->load_current_tables_files( $current_dir.'/'.$config->{'download_dir'}.'/extracted_files/'.$config->{'executable'}, $config->{'git_dir'}."/recvpackets.txt", $config->{'git_dir'}."/shuffle.txt" );
 
@@ -117,16 +113,20 @@ $extractor->update_cryptkeys( $config->{'git_root'}."/tables/servers.txt", $conf
 
 # move tables files to openkore dir
 print "[SCRIPT] Writing Shuffle...\n";
-$extractor->generate_shuffle( $config->{'git_dir'}."/recvpackets.txt", $config->{'git_dir'}."/shuffle.txt" );
-$extractor->write_shuffle( $config->{'git_dir'}."/shuffle.txt" );
+$extractor->generate_shuffle();
+$extractor->write_shuffle( $current_dir.'/'.$config->{'download_dir'}.'/extracted_files/shuffle.txt' );
 
 # move tables files to openkore dir
 print "[SCRIPT] Writing recvpackets...\n";
-$extractor->write_recvpackets( $config->{'git_dir'}."/recvpackets.txt" );
+$extractor->write_recvpackets( $current_dir.'/'.$config->{'download_dir'}."/extracted_files/recvpackets.txt" );
 
 # move tables files to openkore dir
 print "[SCRIPT] Writing sync...\n";
-$extractor->write_sync( $config->{'git_dir'}."/sync.txt" );
+$extractor->write_sync( $current_dir.'/'.$config->{'download_dir'}."/extracted_files/sync.txt" );
+
+# move tables files to openkore dir
+print "[SCRIPT] Moving files to Openkore Git DIR...\n";
+$patch->move_files_to_git_directory($current_dir);
 
 # make pull request
 
