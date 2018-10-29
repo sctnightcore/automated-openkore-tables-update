@@ -1,4 +1,5 @@
 #!/usr/bin/env perl
+package Extractor;
 
 use strict;
 use warnings;
@@ -14,29 +15,20 @@ my $opt = {
 	servers     => 'servers.txt',
 	server      => 'International - iRO: Re:Start',
 };
-GetOptions(    #
-	$opt,
-	'verbose',
-	'recvpackets=s',
-	'sync|sync=s',
-	'shuffle=s',
-	'servers=s',
-	'server=s',
-	'old_recvpackets|old-recvpackets=s',
-	'old_shuffle|old-shuffle=s',
-);
 
-my ( $ragexe ) = @ARGV;
+my $cryptkeys;
+my $recvpackets;
+my $old_recvpackets;
+my $old_shuffle;
+my $ragexe;
 
-my $cryptkeys       = extract_cryptkeys( $ragexe );
-my $recvpackets     = extract_recvpackets( $ragexe );
-my $old_recvpackets = load_recvpackets( $opt->{old_recvpackets} );
-my $old_shuffle     = load_shuffle( $opt->{old_shuffle} );
-
-update_cryptkeys( $opt->{servers}, $opt->{server}, $cryptkeys );
-write_recvpackets( $opt->{recvpackets}, $recvpackets );
-write_sync( $opt->{sync}, $recvpackets );
-write_shuffle( $opt->{shuffle}, generate_shuffle( $recvpackets, $old_recvpackets, $old_shuffle ) ) if $old_recvpackets && @$old_recvpackets;
+sub load_current_tables_files {
+	my ($self, $ragexe, $old_recvpackets, $old_shuffle ) = @_;
+	my $cryptkeys       = extract_cryptkeys( $ragexe );
+	my $recvpackets     = extract_recvpackets( $ragexe );
+	my $old_recvpackets = load_recvpackets( $old_recvpackets );
+	my $old_shuffle     = load_shuffle( $old_shuffle );
+}
 
 # Load the old recvpackets.txt.
 # If a shuffle.txt was given, unshuffle the old recvpackets.txt with it.
@@ -122,7 +114,7 @@ sub load_shuffle {
 }
 
 sub update_cryptkeys {
-	my ( $file, $block, $cryptkeys ) = @_;
+	my ( $file, $block ) = @_;
 
 	return if !-f $file;
 
@@ -158,7 +150,7 @@ sub update_cryptkeys {
 }
 
 sub write_recvpackets {
-	my ( $file, $recvpackets ) = @_;
+	my ( $file ) = @_;
 
 	open FP, '>', $file;
 	print FP sprintf "# Generated: %sZ\n", gmtime()->datetime;
@@ -171,7 +163,7 @@ sub write_recvpackets {
 # Generate sync.txt.
 # Find a block of 168 consecutive packets with a "2 2 0" signature. Ideally we'd look for packet IDs (085A-0883, 0917-0940) => (0884-08AD, 0941-096A), but packet shuffling makes that hard.
 sub write_sync {
-	my ( $file, $recvpackets ) = @_;
+	my ( $file ) = @_;
 
 	open FP, '>', $file;
 	print FP sprintf "# Generated: %sZ\n", gmtime()->datetime;
@@ -212,7 +204,7 @@ sub extract_recvpackets {
 
 	my $stack = [];
 	while ( my $op = $disasm->disasm ) {
-		printf "%04x  %-14s  %s\n", $disasm->op_start, unpack( 'H*', substr $recvpackets_code, $disasm->op_start, $disasm->op_len ), $op if $opt->{verbose};
+		printf "%04x  %-14s  %s\n", $disasm->op_start, unpack( 'H*', substr $recvpackets_code, $disasm->op_start, $disasm->op_len ), $op;
 
 		# There are two ways to add to the stack: "mov dword[ss:ebp+$offset],$val" and "push dword(0x1)".
 		if ( $op =~ /^mov dword\[ss:ebp\+0x([0-9a-f]+)\],0x([0-9a-f]+)/o ) {
@@ -260,7 +252,7 @@ sub extract_cryptkeys {
 
 		my $stack = [];
 		while ( my $op = $disasm->disasm ) {
-			printf "%04x  %-14s  %s\n", $disasm->op_start, unpack( 'H*', substr $cryptkeys_code, $disasm->op_start, $disasm->op_len ), $op if $opt->{verbose};
+			printf "%04x  %-14s  %s\n", $disasm->op_start, unpack( 'H*', substr $cryptkeys_code, $disasm->op_start, $disasm->op_len ), $op;
 			if ( $op =~ /^mov dword\[ecx\+0x([0-9a-f]+)\],0x([0-9a-f]+)/o ) {
 				push @$stack, $2;
 			}
@@ -367,6 +359,7 @@ sub find_code {
 	$result;
 }
 
+1;
 __END__
 
 0064  c745fc81000000  mov dword[ss:ebp+0xfffffffc],0x81

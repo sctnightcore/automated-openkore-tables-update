@@ -12,6 +12,7 @@ use lib "$RealBin/lib";
 use CommandParser qw(get_options);
 use Patch;
 use Utils;
+use Extractor;
 
 # Dump / log lib
 use Data::Dumper;
@@ -19,6 +20,7 @@ use Data::Dumper;
 # start variables
 my $current_dir = getcwd();
 my $utils = new Utils;
+my $extractor = new Extractor;
 
 # parse config.ini file
 my %config_ini;
@@ -100,5 +102,32 @@ $patch->extract_all_gpf_files($recent_patches, $current_dir);
 # extract infos
 print "[SCRIPT] Converting itemInfo.lub...\n";
 $patch->convert_iteminfo_lub($current_dir);
+
+# move tables files to openkore dir
+print "[SCRIPT] Moving files to Openkore Git DIR...\n";
+$patch->move_files_to_git_directory();
+
+# move tables files to openkore dir
+print "[SCRIPT] Loading Current Tables Files...\n";
+$extractor->load_current_tables_files( $current_dir.$config->{'download_dir'}, $config->{'git_dir'}."/recvpackets.txt", $config->{'git_dir'}."/shuffle.txt" );
+
+# move tables files to openkore dir
+print "[SCRIPT] Updating CryptKeys...\n";
+$extractor->update_cryptkeys( $config->{'git_root'}."/tables/servers.txt", $config->{'servers_block_name'} );
+
+# move tables files to openkore dir
+print "[SCRIPT] Writing Shuffle...\n";
+$extractor->generate_shuffle( $config->{'git_dir'}."/recvpackets.txt", $config->{'git_dir'}."/shuffle.txt" );
+$extractor->write_shuffle( $config->{'git_dir'}."/shuffle.txt" );
+
+# move tables files to openkore dir
+print "[SCRIPT] Writing recvpackets...\n";
+$extractor->write_recvpackets( $config->{'git_dir'}."/recvpackets.txt" );
+
+# move tables files to openkore dir
+print "[SCRIPT] Writing sync...\n";
+$extractor->write_sync( $config->{'git_dir'}."/sync.txt" );
+
+# make pull request
 
 exit;

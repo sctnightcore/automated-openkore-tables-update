@@ -23,41 +23,6 @@ sub new {
     sub ftp;
     return bless {}, $class;
 }
-    
-# # The hat effect data source file is only in the kRO grf file. Grab a copy from github.
-# my $hat_url  = 'https://raw.githubusercontent.com/ROClientSide/kRO-RAW-Mains/master/data/luafiles514/lua%20files/hateffectinfo/hateffectinfo.lua';
-# my $hat_data = $ua->get( $hat_url );
-# if ( $hat_data && $hat_data->is_success && $hat_data->content ) {
-    # open FP, '>', "$extract_dir/hateffectinfo.lua";
-    # print FP $hat_data->content;
-    # close FP;
-    # $extracted->{'data\luafiles514\lua files\hateffectinfo\hateffectinfo.lua'} = $hat_url;
-# }
-# YAML::Syck::DumpFile( "$opt->{download_dir}/extracted_files.yml", $extracted );
-
-# # Convert the hat effect data into the files we need for OpenKore.
-# if ( -f "$extract_dir/hateffectinfo.lua" ) {
-    # convert_hat_effect_file( "$extract_dir/hateffectinfo.lua", "$extract_dir/hateffect_id_handle.txt", "$extract_dir/hateffect_name.txt" );
-# }
-
-# # Copy the files into the git directory.
-# my $map = {
-    # 'idnum2itemdesctable.txt'        => 'itemsdescriptions.txt',
-    # 'idnum2itemdisplaynametable.txt' => 'items.txt',
-    # 'itemslotcounttable.txt'         => 'itemslotcounttable.txt',
-    # 'mapnametable.txt'               => 'maps.txt',
-    # 'questid2display.txt'            => 'quests.txt',
-    # 'resnametable.txt'               => 'resnametable.txt',
-    # 'skillnametable.txt'             => 'skillnametable.txt',
-    # 'hateffect_id_handle.txt'        => '../../hateffect_id_handle.txt',
-    # 'hateffect_name.txt'             => '../../hateffect_name.txt',
-# };
-# foreach ( sort keys %$map ) {
-    # next if !-f "$extract_dir/$_";
-    # printf "Copying [%s] to [%s].\n", $_, $map->{$_};
-    # File::Copy::cp "$extract_dir/$_" => "$opt->{git_dir}/$map->{$_}";
-# }
-
 
 # The way we do this is by wrapping the lub in a piece of lua code which loads the lub, then writes out the data structures the lub sets up.
 # We use https://github.com/ROClientSide/Translation/tree/master/Dev/Tools/SeperateItemInfo to extract the files.
@@ -103,9 +68,24 @@ sub convert_iteminfo_lub {
     close FP;
 }
 
+# need to update this function ROClientSide is now off 2018-10-28
 sub convert_hat_effect_file {
     my ( $lua_file, $id_file, $name_file ) = @_;
+# # The hat effect data source file is only in the kRO grf file. Grab a copy from github.
+# my $hat_url  = 'https://raw.githubusercontent.com/ROClientSide/kRO-RAW-Mains/master/data/luafiles514/lua%20files/hateffectinfo/hateffectinfo.lua';
+# my $hat_data = $ua->get( $hat_url );
+# if ( $hat_data && $hat_data->is_success && $hat_data->content ) {
+    # open FP, '>', "$extract_dir/hateffectinfo.lua";
+    # print FP $hat_data->content;
+    # close FP;
+    # $extracted->{'data\luafiles514\lua files\hateffectinfo\hateffectinfo.lua'} = $hat_url;
+# }
+# YAML::Syck::DumpFile( "$opt->{download_dir}/extracted_files.yml", $extracted );
 
+# # Convert the hat effect data into the files we need for OpenKore.
+# if ( -f "$extract_dir/hateffectinfo.lua" ) {
+    # convert_hat_effect_file( "$extract_dir/hateffectinfo.lua", "$extract_dir/hateffect_id_handle.txt", "$extract_dir/hateffect_name.txt" );
+# }
     return if !open FP, '<', $lua_file;
     local $/;
     binmode FP;
@@ -414,4 +394,26 @@ sub extract_all_gpf_files {
     }
 }
 
+sub move_files_to_git_directory {
+    my ($self, $current_dir) = @_;
+    my $extract_dir = $current_dir."$opt->{download_dir}/extracted_files";
+    # Copy the files into the git directory.
+    my $map = {
+        'idnum2itemdesctable.txt'        => 'itemsdescriptions.txt',
+        'idnum2itemdisplaynametable.txt' => 'items.txt',
+        'itemslotcounttable.txt'         => 'itemslotcounttable.txt',
+        'mapnametable.txt'               => 'maps.txt',
+        'questid2display.txt'            => 'quests.txt',
+        'resnametable.txt'               => 'resnametable.txt',
+        'skillnametable.txt'             => 'skillnametable.txt',
+        'hateffect_id_handle.txt'        => '../../hateffect_id_handle.txt',
+        'hateffect_name.txt'             => '../../hateffect_name.txt',
+    };
+
+    foreach ( sort keys %$map ) {
+        next if !-f "$extract_dir/$_";
+        printf "Copying [%s] to [%s].\n", $_, $map->{$_};
+        File::Copy::cp "$extract_dir/$_" => "$opt->{git_dir}/$map->{$_}";
+    }
+}
 1;
