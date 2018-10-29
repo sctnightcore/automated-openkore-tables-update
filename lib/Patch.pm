@@ -36,7 +36,7 @@ sub convert_iteminfo_lub {
     # SeparateItemInfo.lua requires:
     #   1. Must be run with a 32-bit lua.
     #   2. iteminfo.lub must be named (case sensitive!).
-    my @args = ('lua', $current_dir.'/scripts/SeperateItemInfo.lua', $extract_dir, $extracted_files);
+    my @args = ('lua', $current_dir.'/scripts/SeperateItemInfo.lua', $extract_dir, $extracted_files_dir);
     system @args;
 
     # Move all of the files from $extract_dir/idnum into $extract_dir, and delete the now-empty directory.
