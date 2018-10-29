@@ -28,6 +28,7 @@
    * 2.3 – install the necessary modules using the following commands  
         `sudo cpan Config::IniFiles`  
         `sudo cpan YAML::Syck`  
+		`sudo cpan Disassemble::X86`  
    * 2.4 – install lua 5.1 32-bits  
         `sudo apt-get install lua5.1:i386`  
    * 2.5 - go to grf_extract and make the app  
