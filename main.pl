@@ -103,30 +103,31 @@ $patch->extract_all_gpf_files($recent_patches, $current_dir);
 print "[SCRIPT] Converting itemInfo.lub...\n";
 $patch->convert_iteminfo_lub($current_dir);
 
-# move tables files to openkore dir
+# Load old tables and extract recvpackets
 print "[SCRIPT] Loading Current Tables Files and Ragexe (also extract packets here)...\n";
 $extractor->load_current_tables_files( $current_dir.'/'.$config->{'download_dir'}.'/extracted_files/'.$config->{'executable'}, $config->{'git_connection_dir'}."/recvpackets.txt", $config->{'git_connection_dir'}."/shuffle.txt" );
 
-# move tables files to openkore dir
+# update cryptkeys in servers.txt
 print "[SCRIPT] Updating CryptKeys...\n";
 $extractor->update_cryptkeys( $config->{'git_root'}."/tables/servers.txt", $config->{'servers_block_name'} );
 
-# move tables files to openkore dir
+# generate and write shuffle file
 print "[SCRIPT] Writing Shuffle...\n";
 $extractor->generate_shuffle();
 $extractor->write_shuffle( $current_dir.'/'.$config->{'download_dir'}.'/extracted_files/shuffle.txt' );
 
-# move tables files to openkore dir
+# write recvpackets
 print "[SCRIPT] Writing recvpackets...\n";
 $extractor->write_recvpackets( $current_dir.'/'.$config->{'download_dir'}."/extracted_files/recvpackets.txt" );
 
-# move tables files to openkore dir
+# write sync
 print "[SCRIPT] Writing sync...\n";
 $extractor->write_sync( $current_dir.'/'.$config->{'download_dir'}."/extracted_files/sync.txt" );
 
-# move tables files to openkore dir
+# move files to openkore git dir
 print "[SCRIPT] Moving files to Openkore Git DIR...\n";
-$patch->move_files_to_git_directory($current_dir);
+$patch->move_files_tables_to_git_directory();
+$patch->move_files_connection_to_git_directory();
 
 # make pull request
 

@@ -396,7 +396,7 @@ sub extract_all_gpf_files {
     }
 }
 
-sub move_files_to_git_directory {
+sub move_files_tables_to_git_directory {
     my ($self, $current_dir) = @_;
     my $extract_dir = $current_dir.'/'."$opt->{download_dir}/extracted_files";
     # Copy the files into the git directory.
@@ -410,9 +410,6 @@ sub move_files_to_git_directory {
         'skillnametable.txt'             => 'skillnametable.txt',
         'hateffect_id_handle.txt'        => '../../hateffect_id_handle.txt',
         'hateffect_name.txt'             => '../../hateffect_name.txt',
-		'sync.txt'                       => 'sync.txt',
-		'recvpackets.txt'                => 'recvpackets.txt',
-		'shuffle.txt'                    => 'shuffle.txt',
     };
 
     foreach ( sort keys %$map ) {
@@ -421,4 +418,22 @@ sub move_files_to_git_directory {
         File::Copy::cp "$extract_dir/$_" => "$opt->{git_dir}/$map->{$_}";
     }
 }
+
+sub move_files_connection_to_git_directory {
+    my ($self, $current_dir) = @_;
+    my $extract_dir = $current_dir.'/'."$opt->{download_dir}/extracted_files";
+    # Copy the files into the git directory.
+    my $map = {
+		'sync.txt'                       => 'sync.txt',
+		'recvpackets.txt'                => 'recvpackets.txt',
+		'shuffle.txt'                    => 'shuffle.txt',
+    };
+
+    foreach ( sort keys %$map ) {
+        next if !-f "$extract_dir/$_";
+        printf "Copying [%s] to [%s].\n", $_, $map->{$_};
+        File::Copy::cp "$extract_dir/$_" => "$opt->{git_connection_dir}/$map->{$_}";
+    }
+}
+
 1;
