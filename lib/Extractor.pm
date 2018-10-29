@@ -19,7 +19,8 @@ sub new {
 }
 
 sub load_current_tables_files {
-	my ($self, $ragexe, $old_recvpackets, $old_shuffle ) = @_;
+	my ($self, $old_ragexe, $old_recvpackets, $old_shuffle ) = @_;
+	$ragexe = $old_ragexe;
 	$cryptkeys       = extract_cryptkeys( $ragexe );
 	$recvpackets     = extract_recvpackets( $ragexe );
 	$old_recvpackets = load_recvpackets( $old_recvpackets );
@@ -30,8 +31,8 @@ sub load_current_tables_files {
 # If a shuffle.txt was given, unshuffle the old recvpackets.txt with it.
 # Generate a new shuffle.txt from the old and new recvpackets.txt.
 sub generate_shuffle {
-	my ( $new_recvpackets, $old_recvpackets, $old_shuffle ) = @_;
-
+	my ( $recvpackets ) = @_;
+	$new_recvpackets = load_recvpackets( $recvpackets );
 	# Unshuffle the old recvpackets.
 	if ( $old_shuffle && @$old_shuffle ) {
 		my $reverse_map = { map { $_->{to} => $_->{from} } @$old_shuffle };
@@ -356,25 +357,3 @@ sub find_code {
 }
 
 1;
-__END__
-
-0064  c745fc81000000  mov dword[ss:ebp+0xfffffffc],0x81
-006b  c745f003000000  mov dword[ss:ebp+0xfffffff0],0x3
-0072  c745f403000000  mov dword[ss:ebp+0xfffffff4],0x3
-0079  c745f800000000  mov dword[ss:ebp+0xfffffff8],0x0
-0080  e8fff7ffff      call 0xfffff884
-297c  6a01            push dword(0x1)
-297e  6a03            push dword(0x3)
-2980  6a03            push dword(0x3)
-2982  6881010000      push dword(0x181)
-2987  8bce            mov ecx,esi
-2989  e8b6d5ffff      call 0xffffff44
-
-0000  83f801          cmp eax,0x1
-0003  751b            jne 0x20
-0005  c74104c00c7842  mov dword[ecx+0x4],0x42780cc0
-000c  c74108dc0aeb1c  mov dword[ecx+0x8],0x1ceb0adc
-0013  c7410c286df867  mov dword[ecx+0xc],0x67f86d28
-001a  33c0            xor eax,eax
-001c  5d              pop ebp
-001d  c20400          ret 0x4

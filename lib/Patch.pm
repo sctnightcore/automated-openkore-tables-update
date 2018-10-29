@@ -28,7 +28,7 @@ sub new {
 # We use https://github.com/ROClientSide/Translation/tree/master/Dev/Tools/SeperateItemInfo to extract the files.
 sub convert_iteminfo_lub {
     my ($self, $current_dir) = @_;
-    my $extract_dir = $current_dir."/$opt->{download_dir}/system";
+    my $extract_dir = $current_dir."/$opt->{download_dir}/extracted_files/system";
 	my $extracted_files_dir =  $current_dir."/$opt->{download_dir}/extracted_files";
 
     return if !-f "$extract_dir/iteminfo.lub";
