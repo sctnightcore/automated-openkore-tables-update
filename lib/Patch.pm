@@ -29,13 +29,14 @@ sub new {
 sub convert_iteminfo_lub {
     my ($self, $current_dir) = @_;
     my $extract_dir = $current_dir."/$opt->{download_dir}/system";
+	my $extracted_files_dir =  $current_dir."/$opt->{download_dir}/extracted_files";
 
     return if !-f "$extract_dir/iteminfo.lub";
 
     # SeparateItemInfo.lua requires:
     #   1. Must be run with a 32-bit lua.
     #   2. iteminfo.lub must be named (case sensitive!).
-    my @args = ('lua', $current_dir.'/scripts/SeperateItemInfo.lua', $extract_dir, $extract_dir);
+    my @args = ('lua', $current_dir.'/scripts/SeperateItemInfo.lua', $extract_dir, $extracted_files);
     system @args;
 
     # Move all of the files from $extract_dir/idnum into $extract_dir, and delete the now-empty directory.
@@ -298,7 +299,7 @@ sub download_ftp_files {
     my $downloaded = 0;
     foreach ( reverse @$recent_patches ) {
         my $url  = "$opt->{download_base_url}/$_";
-        my $file = $current_dir."$opt->{download_dir}/$_";
+        my $file = $current_dir."/$opt->{download_dir}/$_";
 
         next if -f $file;
 
@@ -318,9 +319,9 @@ sub download_ftp_files {
 sub extract_all_rgz_files {
     my ($self, $recent_patches, $current_dir) = @_;
     # Extract file lists from each rgz.
-    my $download_dir = $current_dir . $opt->{'download_dir'};
+    my $download_dir = $current_dir. '/'.$opt->{'download_dir'}.'/extracted_files';
     foreach ( reverse @$recent_patches ) {
-        my $file = $current_dir."$opt->{download_dir}/$_";
+        my $file = $current_dir."/$opt->{download_dir}/$_";
 
         next if $file !~ /\.rgz$/o;
         next if !-f $file;
@@ -341,9 +342,9 @@ sub extract_all_gpf_files {
     my ($self, $recent_patches, $current_dir) = @_;
     
     # Extract file lists from each gpf.
-    my $download_dir = $current_dir . $opt->{'download_dir'};
+    my $download_dir = $current_dir .'/'. $opt->{'download_dir'};
     foreach ( reverse @$recent_patches ) {
-        my $file = $current_dir."$opt->{download_dir}/$_";
+        my $file = $current_dir.'/'."$opt->{download_dir}/$_";
         next if $file !~ /\.g[pr]f$/o;
         next if !-f $file;
         next if -f "$file.yml";
@@ -361,18 +362,18 @@ sub extract_all_gpf_files {
     # Merge the gpf file lists together to find the latest version of each file.
     my $latest = {};
     foreach my $p ( reverse @$recent_patches ) {
-        my $yml = $current_dir."$opt->{download_dir}/$p.yml";
+        my $yml = $current_dir.'/'."$opt->{download_dir}/$p.yml";
 
         next if !-f $yml;
 
         my $files = YAML::Syck::LoadFile( $yml );
         $latest->{$_} ||= $p foreach keys %$files;
     }
-    YAML::Syck::DumpFile( $current_dir."$opt->{download_dir}/latest.yml", $latest );
+    YAML::Syck::DumpFile( $current_dir.'/'."$opt->{download_dir}/latest.yml", $latest );
 
     # Extract the latest version of interesting files.
-    my $extracted = eval { YAML::Syck::LoadFile( $current_dir."$opt->{download_dir}/extracted_files.yml" ) } || {};
-    my $extract_dir = $current_dir."$opt->{download_dir}/extracted_files";
+    my $extracted = eval { YAML::Syck::LoadFile( $current_dir.'/'."$opt->{download_dir}/extracted_files.yml" ) } || {};
+    my $extract_dir = $current_dir.'/'."$opt->{download_dir}/extracted_files";
     mkdir $extract_dir if !-d $extract_dir;
     foreach ( sort keys %$latest ) {
         next if !/\.(txt|lua|lub|gat|gnd|rsw)$/;
@@ -382,9 +383,9 @@ sub extract_all_gpf_files {
 
         if ( $latest->{$_} =~ /\.g[pr]f$/ ) {
             print "[SCRIPT] Extracting ".$latest->{$_}.".\n";
-            system $current_dir.'/scripts/grf_extract/grf_extract_64', $current_dir."$opt->{download_dir}/$latest->{$_}", $_ => "$extract_dir/$base";
+            system $current_dir.'/scripts/grf_extract/grf_extract_64', $current_dir.'/'."$opt->{download_dir}/$latest->{$_}", $_ => "$extract_dir/$base";
         } elsif ( $latest->{$_} =~ /\.rgz$/ ) {
-            system  $current_dir.'/scripts/rgz.pl',  $download_dir, '-x', $current_dir."$opt->{download_dir}/$latest->{$_}", $_ => "$extract_dir/$base";
+            system  $current_dir.'/scripts/rgz.pl',  $download_dir, '-x', $current_dir.'/'."$opt->{download_dir}/$latest->{$_}", $_ => "$extract_dir/$base";
         }
 
         # GRF files typically have a screwed up mix of UCS-2 and UTF-8. Fix them.
@@ -396,7 +397,7 @@ sub extract_all_gpf_files {
 
 sub move_files_to_git_directory {
     my ($self, $current_dir) = @_;
-    my $extract_dir = $current_dir."$opt->{download_dir}/extracted_files";
+    my $extract_dir = $current_dir.'/'."$opt->{download_dir}/extracted_files";
     # Copy the files into the git directory.
     my $map = {
         'idnum2itemdesctable.txt'        => 'itemsdescriptions.txt',

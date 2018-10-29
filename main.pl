@@ -109,7 +109,7 @@ $patch->move_files_to_git_directory($current_dir);
 
 # move tables files to openkore dir
 print "[SCRIPT] Loading Current Tables Files...\n";
-$extractor->load_current_tables_files( $current_dir.'/'.$config->{'download_dir'}.'/'.$config->{'executable'}, $config->{'git_dir'}."/recvpackets.txt", $config->{'git_dir'}."/shuffle.txt" );
+$extractor->load_current_tables_files( $current_dir.'/'.$config->{'download_dir'}.'/extracted_files/'.$config->{'executable'}, $config->{'git_dir'}."/recvpackets.txt", $config->{'git_dir'}."/shuffle.txt" );
 
 # move tables files to openkore dir
 print "[SCRIPT] Updating CryptKeys...\n";
