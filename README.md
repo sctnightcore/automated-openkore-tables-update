@@ -1,5 +1,6 @@
 # Automated Openkore Servers Tables Update
-
+![image](https://user-images.githubusercontent.com/10372732/47697547-51712580-dbea-11e8-9a32-3263cd48138e.png)
+---------------------------
  1 – Install Ubuntu:  
 * https://www.ubuntu.com/download/desktop  
   
