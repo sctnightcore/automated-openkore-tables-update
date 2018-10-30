@@ -5,6 +5,9 @@ use warnings;
 
 use Getopt::Long;
 use IO::Handle;
+use File::Basename qw( fileparse );
+use File::Path qw( make_path );
+use File::Spec;
 
 my $opt = get_options(
 	{},
@@ -58,6 +61,15 @@ sub extract {
 	while ( !$fp->eof && @$files ) {
 		my $file = shift @$files;
 		for ( my $bytes = $file->{start} ; $bytes > 0 ; ) { $bytes -= read $fp, $buf = '', $bytes > 8192 ? 8192 : $bytes; }
+
+		my $full_path = $output_dir.'/'.$file->{target};
+
+		my ( $logfile, $directories ) = fileparse $full_path;
+
+		if ( !-d $directories ) {
+			make_path $directories or die "Failed to create path: $directories";
+		}
+
 		if ( open FP, '>', $output_dir.'/'.$file->{target} ) {
 			print "Extracting $file->{name} into $file->{target}..." if $opt->{verbose};
 			for ( my $bytes = $file->{size} ; $bytes > 0 ; ) { $bytes -= read $fp, $buf = '', $bytes > 8192 ? 8192 : $bytes;print FP $buf; }
