@@ -13,6 +13,7 @@ use CommandParser qw(get_options);
 use Patch;
 use Utils;
 use Extractor;
+use GitHandler;
 
 # Dump / log lib
 use Data::Dumper;
@@ -57,8 +58,14 @@ if(!$config) {
     exit;
 }
 
+# start Git Handler
+my $git = new GitHandler($config->{'server'});
+
 # start patch
 my $patch = new Patch($config);
+
+# checking git dir 
+$git->setup_git_dir( $config->{git_root}, $config->{branch} );
 
 # check if patch is allowed
 print "[SCRIPT] Checking patch_allow...\n";
@@ -130,5 +137,6 @@ $patch->move_files_tables_to_git_directory();
 $patch->move_files_connection_to_git_directory();
 
 # make pull request
+$git->commit( $config->{branch}, $config->{'server'} );
 
 exit;
