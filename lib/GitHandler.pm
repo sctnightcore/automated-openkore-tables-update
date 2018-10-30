@@ -43,12 +43,14 @@ sub setup_git_dir {
 	}
 
 	chdir $git_dir;
-
-	# Make sure we start out on master.
-	system 'git checkout master';
+	# Revert all locally modified files.
+	system 'git reset --hard origin/master';
 
 	# Remove all untracked files.
 	system 'git clean -d -f';
+
+	# Make sure we start out on master.
+	system 'git checkout master';
 
 	# Fetch the latest code from github.
 	system 'git fetch --all';
@@ -56,8 +58,7 @@ sub setup_git_dir {
 	# Remove remote-tracking references that have been removed upstream. (Eg, the branch was merged and deleted.)
 	system 'git fetch --prune origin';
 
-	# Revert all locally modified files.
-	system 'git reset --hard origin/master';
+
 
 	my $remote_branches = [ map { s{^\s+|origin/|\s+$}{}gs;$_; } split /\n/, `git branch -r` ];
 	my $local_branches  = [ map { s/^[\s*]+|\s+$//gs;$_; } split /\n/,       `git branch` ];
