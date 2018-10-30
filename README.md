@@ -28,20 +28,30 @@
    * 2.3 – install the necessary modules using the following commands  
         `sudo cpan Config::IniFiles`  
         `sudo cpan YAML::Syck`  
-		`sudo cpan Disassemble::X86`  
+        `sudo cpan Disassemble::X86`  
    * 2.4 – install lua 5.1 32-bits  
         `sudo apt-get install lua5.1:i386`  
-   * 2.5 - go to grf_extract and make the app  
+   * 2.5 – install hub (git helper)  
+        `sudo add-apt-repository ppa:cpick/hub`  
+        `sudo apt-get update`  
+        `sudo apt-get install hub`  
+   * 2.6 - go to grf_extract and make the app  
     open terminal  
-        * 2.5.1 - go to folder  
+        * 2.6.1 - go to folder  
         `cd automated-openkore-tables-update/scripts/grf_extract`  
-        * 2.5.2 - make grf_extract  
+        * 2.6.2 - make grf_extract  
         `sudo make`  
-        * 2.5.3 - give permission to execute program  
+        * 2.6.3 - give permission to execute program  
         `sudo chmod u+x grf_extract_64`  
-   * 2.6 -  give chmod 777 to the project  
+   * 2.7 -  give chmod 777 to the project  
     open terminal  
-        * 2.6.1 - go to where automated-openkore-tables-update is located  
+        * 2.7.1 - go to where automated-openkore-tables-update is located  
             `cd Desktop/`  
-        * 2.6.2 - give chmod 777 to automated-openkore-tables-update  
+        * 2.7.2 - give chmod 777 to automated-openkore-tables-update  
             `sudo chmod 777 -R automated-openkore-tables-update/`  
+   * 2.8 -  update openkore origin url  
+    open terminal  
+        * 2.7.1 - go to where openkore is located  
+            `cd Desktop/openkore/`  
+            `sudo git config remote.origin.url https://github.com/openkore/openkore.git/`
+
