@@ -12,46 +12,47 @@
    * 2.3 – use terminal  to move you into a folder that you want to install openkore and automated update  
         `cd Desktop/`  
    * 2.4 – clone openkore project  
-        `sudo git clone https://www.github.com/openkore/openkore`  
+        `sudo git clone https://github.com/openkore/openkore.git/`  
    * 2.5 – clone automated update project  
-        `sudo git clone https://github.com/alisonrag/automated-openkore-tables-update`  
+        `sudo git clone https://github.com/alisonrag/automated-openkore-tables-update.git/`  
   
  3 – Install Requirements  
-   * 2.1 - open terminal and check if you have c++ compiler  
+   * 3.1 - open terminal and check if you have c++ compiler  
         `sudo g++ -v`  
-        * 2.1.1 if not installed, just install using the following command  
+        * 3.1.1 if not installed, just install using the following command  
             `sudo apt-get install build-essential g++`  
-   * 2.2 – open terminal and check if perl is installed  
+   * 3.3 – open terminal and check if perl is installed  
         `perl -v`  
-        * 2.2.1 – if not installed install using the command  
+        * 3.2.1 – if not installed install using the command  
             `sudo apt-get install perl`  
-   * 2.3 – install the necessary modules using the following commands  
+   * 3.3 – install the necessary modules using the following commands  
         `sudo cpan Config::IniFiles`  
         `sudo cpan YAML::Syck`  
         `sudo cpan Disassemble::X86`  
-   * 2.4 – install lua 5.1 32-bits  
+   * 3.4 – install lua 5.1 32-bits  
         `sudo apt-get install lua5.1:i386`  
-   * 2.5 – install hub (git helper)  
+   * 3.5 – install hub (git helper)  
         `sudo add-apt-repository ppa:cpick/hub`  
         `sudo apt-get update`  
         `sudo apt-get install hub`  
-   * 2.6 - go to grf_extract and make the app  
+   * 3.6 - go to grf_extract and make the app  
     open terminal  
-        * 2.6.1 - go to folder  
+        * 3.6.1 - go to folder  
         `cd automated-openkore-tables-update/scripts/grf_extract`  
-        * 2.6.2 - make grf_extract  
+        * 3.6.2 - make grf_extract  
         `sudo make`  
-        * 2.6.3 - give permission to execute program  
+        * 3.6.3 - give permission to execute program  
         `sudo chmod u+x grf_extract_64`  
-   * 2.7 -  give chmod 777 to the project  
+   * 3.7 -  give chmod 777 to the project  
     open terminal  
-        * 2.7.1 - go to where automated-openkore-tables-update is located  
+        * 3.7.1 - go to where automated-openkore-tables-update is located  
             `cd Desktop/`  
-        * 2.7.2 - give chmod 777 to automated-openkore-tables-update  
+        * 3.7.2 - give chmod 777 to automated-openkore-tables-update  
             `sudo chmod 777 -R automated-openkore-tables-update/`  
-   * 2.8 -  update openkore origin url  
-    open terminal  
-        * 2.7.1 - go to where openkore is located  
-            `cd Desktop/openkore/`  
-            `sudo git config remote.origin.url https://github.com/openkore/openkore.git/`
 
+ 4 - Configuration
+   * 4.1 - use config/config.ini to configure
+
+ 5 - Execute
+   * 5.1 - open terminal in automated-openkore-tables-update folder  and use sudo to execute
+       `sudo perl main.pl`
