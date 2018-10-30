@@ -135,8 +135,8 @@ $extractor->write_sync( $current_dir.'/'.$config->{'download_dir'}."/extracted_f
 
 # move files to openkore git dir
 print "[SCRIPT] Moving files to Openkore Git DIR...\n";
-$patch->move_files_tables_to_git_directory();
-$patch->move_files_connection_to_git_directory();
+$patch->move_files_tables_to_git_directory($current_dir);
+$patch->move_files_connection_to_git_directory($current_dir);
 
 # make pull request
 $git->commit( $config->{branch}, $config->{'server'} );
