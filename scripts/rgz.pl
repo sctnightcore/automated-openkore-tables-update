@@ -60,6 +60,7 @@ sub extract {
 	my $buf = '';
 	while ( !$fp->eof && @$files ) {
 		my $file = shift @$files;
+        next if $file->{name} !~ /(txt|lub|exe)$/;
 		for ( my $bytes = $file->{start} ; $bytes > 0 ; ) { $bytes -= read $fp, $buf = '', $bytes > 8192 ? 8192 : $bytes; }
 
 		my $full_path = $output_dir.'/'.$file->{target};
