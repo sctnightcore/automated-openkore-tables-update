@@ -133,14 +133,14 @@ $extractor->write_recvpackets( $current_dir.'/'.$config->{'download_dir'}."/extr
 print "[SCRIPT] Writing sync...\n";
 $extractor->write_sync( $current_dir.'/'.$config->{'download_dir'}."/extracted_files/sync.txt" );
 
+# prepare to commit
+print "[SCRIPT]Setuping Openkore Git DIR to commit...\n";
+$git->setup_git_dir_to_commit( $config->{git_root}, $config->{branch} );
+
 # move files to openkore git dir
 print "[SCRIPT] Moving files to Openkore Git DIR...\n";
 $patch->move_files_tables_to_git_directory($current_dir);
 $patch->move_files_connection_to_git_directory($current_dir);
-
-# prepare to commit
-print "[SCRIPT]Setuping Openkore Git DIR to commit...\n";
-$git->setup_git_dir_to_commit( $config->{git_root}, $config->{branch} );
 
 # make pull request
 print "[SCRIPT] Commiting and making pull-request...\n";
