@@ -29,7 +29,7 @@ sub new {
 }
 
 sub setup_git_dir {
-	my ( $self, $git_dir, $branch ) = @_;
+	my ( $self, $git_dir ) = @_;
 
 	if ( !-d $git_dir ) {
 		my $dirname = ( $git_dir =~ m{(.*)/} )[0];
@@ -58,10 +58,14 @@ sub setup_git_dir {
 	# Remove remote-tracking references that have been removed upstream. (Eg, the branch was merged and deleted.)
 	system 'git fetch --prune origin';
 
+	system 'git pull origin';
+}
 
+sub setup_git_dir_to_commit {
+    my ( $self, $git_dir, $branch ) = @_;
 
-	my $remote_branches = [ map { s{^\s+|origin/|\s+$}{}gs;$_; } split /\n/, `git branch -r` ];
-	my $local_branches  = [ map { s/^[\s*]+|\s+$//gs;$_; } split /\n/,       `git branch` ];
+    my $remote_branches = [ map { s{^\s+|origin/|\s+$}{}gs;$_; } split /\n/, `git branch -r` ];
+    my $local_branches  = [ map { s/^[\s*]+|\s+$//gs;$_; } split /\n/,       `git branch` ];
 
 	# If we have a local branch, always delete it. We'll re-generate it anyway,
 	# and it's probably not in sync with the origin (if the origin has it too).
