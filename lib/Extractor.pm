@@ -36,10 +36,11 @@ sub load_current_tables_files {
 sub generate_shuffle {
     my ( $self, $style ) = @_;
 	my $new_recvpackets = $recvpackets;
+$shuffle = [];
     if ( $style eq "old" ) {
-        my @shuffle = qw(0089 0113 0437 0360 0361 0362 0363 0364 0365 0366 0367 0368 0369 087B 0838 0835 0819 0817 0815 0811 0802 093E 07E4 0436 02C4 087E 0202 022D 023B);
-        foreach ( 0 .. $#$shuffle ) {
-            my $old = $shuffle[$_];
+        my $openkore_shuffle = [qw(0089 0113 0437 0360 0361 0362 0363 0364 0365 0366 0367 0368 0369 087B 0838 0835 0819 0817 0815 0811 0802 093E 07E4 0436 02C4 087E 0202 022D 023B)];
+        foreach ( 0 .. $#$openkore_shuffle ) {
+            my $old = $openkore_shuffle->[$_];
             my $new = $new_recvpackets->[$_]->{id};
             push @$shuffle, { from => $old, to => $new };
         }
@@ -65,11 +66,11 @@ sub generate_shuffle {
             splice @$old_recvpackets, $i, 0, { id => $id };
         }
         if (@$old_recvpackets != @$new_recvpackets) {
-            sprintf "ERROR: Size of recvpackets changed [%d != %d], shuffle will be wrong. Indicate new packets.\n", scalar @$old_recvpackets, scalar @$new_recvpackets;
+            die sprintf "ERROR: Size of recvpackets changed [%d != %d], shuffle will be wrong. Indicate new packets.\n", scalar @$old_recvpackets, scalar @$new_recvpackets;
         }
 
         # Generate the shuffle!
-        $shuffle = [];
+        
         foreach ( 0 .. $#$new_recvpackets ) {
             my $old = $old_recvpackets->[$_]->{id};
             my $new = $new_recvpackets->[$_]->{id};
