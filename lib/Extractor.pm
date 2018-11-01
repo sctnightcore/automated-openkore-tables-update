@@ -35,6 +35,7 @@ sub load_current_tables_files {
 # Generate a new shuffle.txt from the old and new recvpackets.txt.
 sub generate_shuffle {
     my ( $self, $style ) = @_;
+	my $new_recvpackets = $recvpackets;
     if ( $style eq "old" ) {
         my @shuffle = qw(0089 0113 0437 0360 0361 0362 0363 0364 0365 0366 0367 0368 0369 087B 0838 0835 0819 0817 0815 0811 0802 093E 07E4 0436 02C4 087E 0202 022D 023B);
         foreach ( 0 .. $#$shuffle ) {
@@ -60,7 +61,7 @@ sub generate_shuffle {
         for ( my $i = 0; $i < $#$new_recvpackets; $i++ ) {
             my $id = $new_recvpackets->[$i]->{id};
             next if !$new_packets{ $id };
-            next if (!grep { $new_recvpackets->[$_]->{id} eq $old_recvpackets->[$i]->{id} } values $new_recvpackets);
+            next if (!grep { $new_recvpackets->[$_]->{id} eq $old_recvpackets->[$i]->{id} } values %{$new_recvpackets});
             splice @$old_recvpackets, $i, 0, { id => $id };
         }
         if (@$old_recvpackets != @$new_recvpackets) {
