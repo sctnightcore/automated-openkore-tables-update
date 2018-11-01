@@ -85,7 +85,7 @@ sub write_shuffle {
     my ( $self, $file ) = @_;
 
     open FP, '>', $file;
-    print FP sprintf " # Script by alisonrag\n# Generated: %sZ\n", gmtime()->datetime;
+    print FP sprintf "# Script by alisonrag\n# Generated: %sZ\n", gmtime()->datetime;
     foreach ( @$shuffle ) {
         print FP sprintf "%s %s\n", $_->{from}, $_->{to};
     }
@@ -164,7 +164,7 @@ sub write_recvpackets {
     my ( $self, $file ) = @_;
 
     open FP, '>', $file;
-    print FP sprintf " # Script by alisonrag\n# Generated: %sZ\n", gmtime()->datetime;
+    print FP sprintf "# Script by alisonrag\n# Generated: %sZ\n", gmtime()->datetime;
     foreach ( @$recvpackets ) {
         print FP sprintf "%s %s %s %s\n", @$_{qw( id length min_length repeat )};
     }
@@ -177,7 +177,7 @@ sub write_sync {
     my ( $self, $file ) = @_;
 
     open FP, '>', $file;
-    print FP sprintf " # Script by alisonrag\n# Generated: %sZ\n", gmtime()->datetime;
+    print FP sprintf "# Script by alisonrag\n# Generated: %sZ\n", gmtime()->datetime;
     for ( my $i = 0 ; $i < @$recvpackets ; $i++ ) {
         next if $recvpackets->[$i]->{length} != 2;
         my $j = $i;
